@@ -12,7 +12,7 @@ from optimize_images.__main__ import main
 # parameters
 VIDEO_TYPES = ["*.mp4", "*.mov"]
 IMAGE_TYPES = ["*.png", "*.jpg", "*.jpeg"]
-HANDBRAKE_PARAMETERS = ['-e', 'x264', '-q', '20', '-r', '25', '-2', '-T']
+HANDBRAKE_PARAMETERS = ['-e', 'x264', '-q', '20', '-r', '25', '-2', '-T', '--keep-display-aspect', '--crop', '0:0:0:0']
 
 
 def filename(path):
@@ -144,7 +144,7 @@ for input_file in sys.argv[1:]:
                 if "[FULLSCREEN]" in movie.file_name():
                     subprocess.check_output(['HandBrakeCLI', '-i', movie_path, '-o', output_path] + HANDBRAKE_PARAMETERS + ['-X', '1280'], stderr=DEVNULL)
                 else:
-                    subprocess.check_output(['HandBrakeCLI', '-i', movie_path, '-o', output_path] + HANDBRAKE_PARAMETERS + ['-X', str(movie.width())], stderr=DEVNULL)
+                    subprocess.check_output(['HandBrakeCLI', '-i', movie_path, '-o', output_path] + HANDBRAKE_PARAMETERS + ['-w', str(movie.width()), '-l', str(movie.height())], stderr=DEVNULL)
                 
                 if os.path.getsize(output_path) < old_size:
                     shutil.copyfile(output_path, movie_path)
