@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import os
 import os.path
@@ -7,10 +8,10 @@ import subprocess
 import glob
 import appscript
 import time
-from optimize_images.__main__ import main
+from PIL import Image
 
 # parameters
-VIDEO_TYPES = ["*.mp4", "*.mov"]
+VIDEO_TYPES = ["*.mp4", "*.mov", "*.m4v"]
 IMAGE_TYPES = ["*.png", "*.jpg", "*.jpeg"]
 HANDBRAKE_PARAMETERS = ['-e', 'x264', '-q', '20', '-r', '25', '-2', '-T', '--keep-display-aspect', '--crop', '0:0:0:0']
 
@@ -106,6 +107,21 @@ for input_file in sys.argv[1:]:
         print("   🏞  Squashing", filename(image) + '...')
         try:
             subprocess.check_output(['optimize-images', image, '-mw', '1280'])
+            new_size = os.path.getsize(image)
+            print_result(old_size, new_size)
+        except:
+            print("      ❌ Error while squashing!")
+            ERRORS.append(("   🏞 ", filename(input_file), filename(image), "(Squash error)"))
+            ERROR_COUNT += 1
+    
+    images = glob.glob(os.path.join(DATA_PATH, '*.tiff'))
+    images += glob.glob(os.path.join(DATA_PATH, '*.tif'))
+    for image in images:
+        old_size = os.path.getsize(image)
+        print("   🏞  Squashing", filename(image) + '...')
+        try:
+            itemp = Image.open(image)
+            itemp.save(image, compression='tiff_lzw')
             new_size = os.path.getsize(image)
             print_result(old_size, new_size)
         except:
